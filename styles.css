@@ -1,0 +1,81 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f4f4f4;
+}
+
+.app {
+  padding: 16px;
+  max-width: 500px;
+  margin: auto;
+}
+
+.card {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.timer {
+  font-size: 48px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.stoppage {
+  text-align: center;
+  color: #666;
+  margin-top: 4px;
+}
+
+.score-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.team {
+  text-align: center;
+}
+
+.score {
+  font-size: 40px;
+  margin: 8px 0;
+}
+
+button {
+  padding: 10px 14px;
+  margin: 4px;
+  border-radius: 8px;
+  border: none;
+  background: #e0e0e0;
+  font-size: 16px;
+}
+
+button.primary {
+  background: #1976d2;
+  color: white;
+}
+
+button.danger {
+  background: #d32f2f;
+  color: white;
+}
+
+.centre-pass {
+  text-align: center;
+}
+
+#centrePassIndicator {
+  font-weight: bold;
+  margin-bottom: 6px;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.hidden {
+  display: none;
+}

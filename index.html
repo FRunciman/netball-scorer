@@ -2,25 +2,96 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>My Simple Webpage</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="A simple example webpage" />
-
-    <!-- Optional CSS -->
-    <link rel="stylesheet" href="style/styles.css" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Netball Scorer</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header>
-      <h1>Welcome to My Netball scorer</h1>
-    </header>
+    <div class="app">
+      <!-- Setup Screen -->
+      <div id="setupScreen" class="card">
+        <h2>Match Setup</h2>
 
-    <main>
-      <section></section>
-    </main>
+        <label>Team A Name</label>
+        <input id="teamAName" type="text" value="Team A" />
 
-    <footer></footer>
+        <label>Team B Name</label>
+        <input id="teamBName" type="text" value="Team B" />
 
-    <!-- Optional JavaScript -->
-    <script src="script/script.js"></script>
+        <label>Quarter Length (minutes)</label>
+        <input id="quarterLength" type="number" value="15" min="1" />
+
+        <label>Number of Quarters</label>
+        <input id="totalQuarters" type="number" value="4" min="1" />
+
+        <label>First Centre Pass</label>
+        <select id="firstCentrePass">
+          <option value="A">Team A</option>
+          <option value="B">Team B</option>
+        </select>
+
+        <button id="startMatchBtn" class="primary">Start Match</button>
+      </div>
+
+      <!-- Match Screen -->
+      <div id="matchScreen" class="hidden">
+        <div class="card timer-card">
+          <div id="quarterDisplay"></div>
+          <div id="timerDisplay" class="timer">15:00</div>
+          <div id="stoppageDisplay" class="stoppage">+ 00:00 Stoppage</div>
+
+          <div class="timer-controls">
+            <button id="startBtn">Start</button>
+            <button id="pauseBtn">Pause</button>
+          </div>
+        </div>
+
+        <div class="card score-card">
+          <div class="team">
+            <h3 id="teamALabel"></h3>
+            <div id="scoreA" class="score">0</div>
+            <div>
+              <button id="addA">+1</button>
+              <button id="subA">-1</button>
+            </div>
+          </div>
+
+          <div class="centre-pass">
+            <div id="centrePassIndicator">Centre: Team A</div>
+            <button id="overrideCentre">Override</button>
+          </div>
+
+          <div class="team">
+            <h3 id="teamBLabel"></h3>
+            <div id="scoreB" class="score">0</div>
+            <div>
+              <button id="addB">+1</button>
+              <button id="subB">-1</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <button id="shareBtn">Share Match</button>
+          <button id="resetBtn" class="danger">Reset Match</button>
+        </div>
+
+        <div class="card">
+          <h3>Quarter Breakdown</h3>
+          <div id="quarterBreakdown"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("service-worker.js");
+      }
+    </script>
   </body>
 </html>
