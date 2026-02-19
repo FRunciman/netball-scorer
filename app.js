@@ -1,204 +1,156 @@
-const NetballApp = (() => {
-  const state = {
-    config: {},
-    match: {},
+let state = {};
+let timerInterval = null;
+let stoppageInterval = null;
+let stoppageAccumulated = 0;
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+function saveMatch() {
+  localStorage.setItem("netballMatch", JSON.stringify(state));
+}
+
+function startMatch() {
+  state = {
+    config: {
+      teamA: teamAInput.value,
+      teamB: teamBInput.value,
+      quarterLength: +quarterLengthInput.value * 60,
+      quarterCount: +quarterCountInput.value,
+    },
+    match: {
+      quarter: 1,
+      timeLeft: +quarterLengthInput.value * 60,
+      running: false,
+      centre: firstCentreSelect.value,
+      scoreA: 0,
+      scoreB: 0,
+      summaries: [],
+    },
   };
 
-  let timerInterval;
+  setupScreen.classList.add("hidden");
+  matchScreen.classList.remove("hidden");
 
-  function init() {
-    attachEvents();
-  }
+  updateUI();
+  saveMatch();
+}
 
-  function attachEvents() {
-    document.getElementById("startMatchBtn").onclick = setupMatch;
-    document.getElementById("startBtn").onclick = startTimer;
-    document.getElementById("pauseBtn").onclick = pauseTimer;
+function updateUI() {
+  teamALabel.textContent = state.config.teamA;
+  teamBLabel.textContent = state.config.teamB;
+  scoreA.textContent = state.match.scoreA;
+  scoreB.textContent = state.match.scoreB;
+  gameTimer.textContent = formatTime(state.match.timeLeft);
+  stoppageTime.textContent = formatTime(stoppageAccumulated);
+  quarterLabel.textContent = `Quarter ${state.match.quarter}`;
 
-    document.getElementById("addA").onclick = () => addGoal("A");
-    document.getElementById("addB").onclick = () => addGoal("B");
-    document.getElementById("subA").onclick = () => subtractGoal("A");
-    document.getElementById("subB").onclick = () => subtractGoal("B");
+  centreBadge.textContent = `Centre: ${state.match.centre === "A" ? state.config.teamA : state.config.teamB}`;
 
-    document.getElementById("overrideCentre").onclick = toggleCentrePass;
-    document.getElementById("shareBtn").onclick = shareMatch;
-    document.getElementById("resetBtn").onclick = resetMatch;
-  }
+  teamACol.classList.toggle("active", state.match.centre === "A");
+  teamBCol.classList.toggle("active", state.match.centre === "B");
+}
 
-  function setupMatch() {
-    state.config = {
-      teamAName: teamAName.value,
-      teamBName: teamBName.value,
-      quarterLength: parseInt(quarterLength.value) * 60,
-      totalQuarters: parseInt(totalQuarters.value),
-      firstCentrePass: firstCentrePass.value,
-    };
+function toggleTimer() {
+  if (state.match.running) {
+    clearInterval(timerInterval);
+    clearInterval(stoppageInterval);
+    state.match.running = false;
 
-    state.match = {
-      currentQuarter: 1,
-      remainingTime: state.config.quarterLength,
-      isRunning: false,
-      stoppage: {
-        total: 0,
-        start: null,
-      },
-      centrePass: state.config.firstCentrePass,
-      quarters: [],
-    };
+    let start = Date.now();
+    stoppageInterval = setInterval(() => {
+      stoppageAccumulated = Math.floor((Date.now() - start) / 1000);
+      updateUI();
+    }, 1000);
+  } else {
+    clearInterval(stoppageInterval);
+    state.match.timeLeft += stoppageAccumulated;
+    stoppageAccumulated = 0;
 
-    updateUISetup();
-  }
-
-  function startTimer() {
-    if (!state.match.isRunning) {
-      state.match.isRunning = true;
-      state.match.startTimestamp = Date.now();
-      timerInterval = setInterval(updateTimer, 1000);
-    }
-  }
-
-  function pauseTimer() {
-    if (state.match.isRunning) {
-      state.match.isRunning = false;
-      clearInterval(timerInterval);
-
-      const elapsed = Math.floor(
-        (Date.now() - state.match.startTimestamp) / 1000,
-      );
-      state.match.remainingTime -= elapsed;
-
-      state.match.stoppage.start = Date.now();
-      trackStoppage();
-    }
-  }
-
-  function trackStoppage() {
-    const interval = setInterval(() => {
-      if (state.match.isRunning) {
-        const pauseDuration = Math.floor(
-          (Date.now() - state.match.stoppage.start) / 1000,
-        );
-        state.match.stoppage.total += pauseDuration;
-        clearInterval(interval);
-        render();
-      } else {
-        const livePause = Math.floor(
-          (Date.now() - state.match.stoppage.start) / 1000,
-        );
-        document.getElementById("stoppageDisplay").innerText =
-          `+ ${formatTime(state.match.stoppage.total + livePause)} Stoppage`;
+    state.match.running = true;
+    timerInterval = setInterval(() => {
+      if (state.match.timeLeft <= 0) {
+        endQuarter();
+        return;
       }
+      state.match.timeLeft--;
+      updateUI();
     }, 1000);
   }
+  updateUI();
+}
 
-  function updateTimer() {
-    const elapsed = Math.floor(
-      (Date.now() - state.match.startTimestamp) / 1000,
-    );
-    const remaining = state.match.remainingTime - elapsed;
+function endQuarter() {
+  clearInterval(timerInterval);
+  clearInterval(stoppageInterval);
+  state.match.running = false;
 
-    if (remaining <= 0) {
-      endQuarter();
-    } else {
-      document.getElementById("timerDisplay").innerText = formatTime(remaining);
-    }
-  }
+  state.match.summaries.push({
+    quarter: state.match.quarter,
+    scoreA: state.match.scoreA,
+    scoreB: state.match.scoreB,
+  });
 
-  function endQuarter() {
-    clearInterval(timerInterval);
-    state.match.isRunning = false;
+  nextQuarterBtn.disabled = false;
+  renderSummary();
+}
 
-    state.match.quarters.push({
-      A: parseInt(scoreA.innerText),
-      B: parseInt(scoreB.innerText),
-      stoppage: state.match.stoppage.total,
-    });
+function nextQuarter() {
+  if (state.match.quarter >= state.config.quarterCount) return;
 
-    if (state.match.currentQuarter >= state.config.totalQuarters) {
-      alert("Match Finished");
-      return;
-    }
+  state.match.quarter++;
+  state.match.timeLeft = state.config.quarterLength;
+  stoppageAccumulated = 0;
+  nextQuarterBtn.disabled = true;
+  updateUI();
+}
 
-    state.match.currentQuarter++;
-    state.match.remainingTime = state.config.quarterLength;
-    state.match.stoppage.total = 0;
-    scoreA.innerText = 0;
-    scoreB.innerText = 0;
+function renderSummary() {
+  quarterSummary.innerHTML = "";
+  state.match.summaries.forEach((q) => {
+    quarterSummary.innerHTML += `Q${q.quarter}: ${state.config.teamA} ${q.scoreA} - ${q.scoreB} ${state.config.teamB}<br>`;
+  });
+}
 
-    renderBreakdown();
-  }
+function resetMatch() {
+  if (!confirm("Are you sure?")) return;
+  if (!confirm("This cannot be undone.")) return;
+  localStorage.removeItem("netballMatch");
+  location.reload();
+}
 
-  function addGoal(team) {
-    const el = team === "A" ? scoreA : scoreB;
-    el.innerText = parseInt(el.innerText) + 1;
-    toggleCentrePass();
-  }
+function shareMatch() {
+  const text = `${state.config.teamA} ${state.match.scoreA} - ${state.match.scoreB} ${state.config.teamB}`;
+  navigator.share?.({ text });
+}
 
-  function subtractGoal(team) {
-    const el = team === "A" ? scoreA : scoreB;
-    const current = parseInt(el.innerText);
-    if (current > 0) el.innerText = current - 1;
-  }
+startMatchBtn.onclick = startMatch;
+startStopBtn.onclick = toggleTimer;
+nextQuarterBtn.onclick = nextQuarter;
+resetBtn.onclick = resetMatch;
+shareBtn.onclick = shareMatch;
 
-  function toggleCentrePass() {
-    state.match.centrePass = state.match.centrePass === "A" ? "B" : "A";
-    const indicator = document.getElementById("centrePassIndicator");
-    indicator.style.transform = "scale(1.1)";
-    indicator.style.opacity = "0.7";
-    setTimeout(() => {
-      indicator.style.transform = "scale(1)";
-      indicator.style.opacity = "1";
-    }, 150);
-    indicator.innerText = `Centre: ${state.match.centrePass === "A" ? state.config.teamAName : state.config.teamBName}`;
-  }
+addA.onclick = () => {
+  state.match.scoreA++;
+  updateUI();
+};
+subA.onclick = () => {
+  if (state.match.scoreA > 0) state.match.scoreA--;
+  updateUI();
+};
+addB.onclick = () => {
+  state.match.scoreB++;
+  updateUI();
+};
+subB.onclick = () => {
+  if (state.match.scoreB > 0) state.match.scoreB--;
+  updateUI();
+};
 
-  function shareMatch() {
-    let text = `Netball Match Result\n\n`;
-    state.match.quarters.forEach((q, i) => {
-      text += `Q${i + 1}: ${q.A} - ${q.B} (+${formatTime(q.stoppage)} stoppage)\n`;
-    });
-
-    if (navigator.share) {
-      navigator.share({ text });
-    } else {
-      navigator.clipboard.writeText(text);
-      alert("Copied to clipboard");
-    }
-  }
-
-  function resetMatch() {
-    if (confirm("Are you sure?") && confirm("Really reset match?")) {
-      location.reload();
-    }
-  }
-
-  function formatTime(seconds) {
-    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
-    const s = String(seconds % 60).padStart(2, "0");
-    return `${m}:${s}`;
-  }
-
-  function updateUISetup() {
-    setupScreen.classList.add("hidden");
-    matchScreen.classList.remove("hidden");
-    teamALabel.innerText = state.config.teamAName;
-    teamBLabel.innerText = state.config.teamBName;
-    document.getElementById("quarterDisplay").innerText =
-      `Quarter ${state.match.currentQuarter} of ${state.config.totalQuarters}`;
-    document.getElementById("timerDisplay").innerText = formatTime(
-      state.config.quarterLength,
-    );
-  }
-
-  function renderBreakdown() {
-    const container = document.getElementById("quarterBreakdown");
-    container.innerHTML = "";
-    state.match.quarters.forEach((q, i) => {
-      container.innerHTML += `<div>Q${i + 1}: ${q.A} - ${q.B} (+${formatTime(q.stoppage)} stoppage)</div>`;
-    });
-  }
-
-  return { init };
-})();
-
-document.addEventListener("DOMContentLoaded", NetballApp.init);
+overrideCentre.onclick = () => {
+  state.match.centre = state.match.centre === "A" ? "B" : "A";
+  updateUI();
+};

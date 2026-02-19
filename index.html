@@ -2,96 +2,105 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
     <title>Netball Scorer</title>
-    <link rel="manifest" href="manifest.json" />
-    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="app">
-      <!-- Setup Screen -->
+      <!-- SETUP SCREEN -->
       <div id="setupScreen" class="card">
-        <h2>Match Setup</h2>
+        <h1>Match Setup</h1>
 
-        <label>Team A Name</label>
-        <input id="teamAName" type="text" value="Team A" />
+        <div class="form-group">
+          <label>Team A Name</label>
+          <input id="teamAInput" type="text" value="Team A" />
+        </div>
 
-        <label>Team B Name</label>
-        <input id="teamBName" type="text" value="Team B" />
+        <div class="form-group">
+          <label>Team B Name</label>
+          <input id="teamBInput" type="text" value="Team B" />
+        </div>
 
-        <label>Quarter Length (minutes)</label>
-        <input id="quarterLength" type="number" value="15" min="1" />
+        <div class="row">
+          <div class="form-group">
+            <label>Quarter Length (minutes)</label>
+            <input id="quarterLengthInput" type="number" value="15" />
+          </div>
 
-        <label>Number of Quarters</label>
-        <input id="totalQuarters" type="number" value="4" min="1" />
+          <div class="form-group">
+            <label>Number of Quarters</label>
+            <input id="quarterCountInput" type="number" value="4" />
+          </div>
+        </div>
 
-        <label>First Centre Pass</label>
-        <select id="firstCentrePass">
-          <option value="A">Team A</option>
-          <option value="B">Team B</option>
-        </select>
+        <div class="form-group">
+          <label>First Centre Pass</label>
+          <select id="firstCentreSelect">
+            <option value="A">Team A</option>
+            <option value="B">Team B</option>
+          </select>
+        </div>
 
-        <button id="startMatchBtn" class="primary">Start Match</button>
+        <button id="startMatchBtn" class="primary-btn">Start Match</button>
       </div>
 
-      <!-- Match Screen -->
+      <!-- MATCH SCREEN -->
       <div id="matchScreen" class="hidden">
         <div class="card timer-card">
-          <div id="quarterDisplay"></div>
-          <div id="timerDisplay" class="timer">15:00</div>
-          <div id="stoppageDisplay" class="stoppage">+ 00:00 Stoppage</div>
+          <div id="quarterLabel">Quarter 1</div>
+          <div id="gameTimer" class="timer">15:00</div>
+          <div class="stoppage">+ <span id="stoppageTime">00:00</span></div>
 
           <div class="timer-controls">
-            <button id="startBtn">Start</button>
-            <button id="pauseBtn">Pause</button>
+            <button id="startStopBtn" class="primary-btn">Start</button>
+            <button id="nextQuarterBtn" class="secondary-btn" disabled>
+              Next Quarter
+            </button>
           </div>
         </div>
 
-        <div class="card score-card">
-          <div class="team">
-            <h3 id="teamALabel"></h3>
-            <div id="scoreA" class="score">0</div>
-            <div>
-              <button id="addA">+1</button>
-              <button id="subA">-1</button>
+        <div class="card scoreboard-card">
+          <div class="scoreboard-grid">
+            <div id="teamACol" class="team-col">
+              <h2 id="teamALabel">Team A</h2>
+              <div id="scoreA" class="score">0</div>
+              <div class="score-buttons">
+                <button id="addA" class="score-btn plus">+</button>
+                <button id="subA" class="score-btn minus">−</button>
+              </div>
+            </div>
+
+            <div id="teamBCol" class="team-col">
+              <h2 id="teamBLabel">Team B</h2>
+              <div id="scoreB" class="score">0</div>
+              <div class="score-buttons">
+                <button id="addB" class="score-btn plus">+</button>
+                <button id="subB" class="score-btn minus">−</button>
+              </div>
             </div>
           </div>
 
-          <div class="centre-pass">
-            <div id="centrePassIndicator">Centre: Team A</div>
-            <button id="overrideCentre">Override</button>
-          </div>
-
-          <div class="team">
-            <h3 id="teamBLabel"></h3>
-            <div id="scoreB" class="score">0</div>
-            <div>
-              <button id="addB">+1</button>
-              <button id="subB">-1</button>
-            </div>
+          <div class="centre-area">
+            <div id="centreBadge" class="centre-badge">Centre: Team A</div>
+            <button id="overrideCentre" class="text-btn">
+              Override Centre
+            </button>
           </div>
         </div>
 
         <div class="card">
-          <button id="shareBtn">Share Match</button>
-          <button id="resetBtn" class="danger">Reset Match</button>
+          <h3>Quarter Summary</h3>
+          <div id="quarterSummary"></div>
         </div>
 
-        <div class="card">
-          <h3>Quarter Breakdown</h3>
-          <div id="quarterBreakdown"></div>
+        <div class="actions">
+          <button id="shareBtn" class="secondary-btn">Share</button>
+          <button id="resetBtn" class="danger-btn">Reset Match</button>
         </div>
       </div>
     </div>
 
     <script src="app.js"></script>
-    <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("service-worker.js");
-      }
-    </script>
   </body>
 </html>
