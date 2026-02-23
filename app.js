@@ -9,10 +9,6 @@ function formatTime(seconds) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-function saveMatch() {
-  localStorage.setItem("netballMatch", JSON.stringify(state));
-}
-
 function startMatch() {
   state = {
     config: {
@@ -36,7 +32,6 @@ function startMatch() {
   matchScreen.classList.remove("hidden");
 
   updateUI();
-  saveMatch();
 }
 
 function updateUI() {
@@ -57,7 +52,6 @@ function updateUI() {
 function toggleTimer() {
   if (state.match.running) {
     clearInterval(timerInterval);
-    clearInterval(stoppageInterval);
     state.match.running = false;
 
     let start = Date.now();
@@ -80,7 +74,8 @@ function toggleTimer() {
       updateUI();
     }, 1000);
   }
-  updateUI();
+
+  startStopBtn.textContent = state.match.running ? "Pause" : "Start";
 }
 
 function endQuarter() {
@@ -118,7 +113,6 @@ function renderSummary() {
 function resetMatch() {
   if (!confirm("Are you sure?")) return;
   if (!confirm("This cannot be undone.")) return;
-  localStorage.removeItem("netballMatch");
   location.reload();
 }
 
