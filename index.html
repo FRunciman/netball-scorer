@@ -9,41 +9,32 @@
   <body>
     <div class="app">
       <!-- SETUP SCREEN -->
-      <!-- SETUP SCREEN -->
-      <div id="setupScreen" class="card setup-card">
-        <div class="setup-header">
-          <h1>Netball Scorer</h1>
-          <p>Create a new match</p>
+      <div id="setupScreen" class="card">
+        <h1>Match Setup</h1>
+
+        <div class="form-group">
+          <label>Team A Name</label>
+          <input id="teamAInput" type="text" value="Team A" />
         </div>
 
-        <div class="teams-row">
-          <div class="team-input-card">
-            <label>Team A</label>
-            <input id="teamAInput" type="text" value="Team A" />
-          </div>
-
-          <div class="team-input-card">
-            <label>Team B</label>
-            <input id="teamBInput" type="text" value="Team B" />
-          </div>
+        <div class="form-group">
+          <label>Team B Name</label>
+          <input id="teamBInput" type="text" value="Team B" />
         </div>
 
-        <div class="config-row">
-          <div class="config-card">
-            <label>Quarter Length</label>
-            <div class="inline-input">
-              <input id="quarterLengthInput" type="number" value="15" />
-              <span>mins</span>
-            </div>
+        <div class="row">
+          <div class="form-group">
+            <label>Quarter Length (minutes)</label>
+            <input id="quarterLengthInput" type="number" value="15" />
           </div>
 
-          <div class="config-card">
-            <label>Quarters</label>
+          <div class="form-group">
+            <label>Number of Quarters</label>
             <input id="quarterCountInput" type="number" value="4" />
           </div>
         </div>
 
-        <div class="centre-select-card">
+        <div class="form-group">
           <label>First Centre Pass</label>
           <select id="firstCentreSelect">
             <option value="A">Team A</option>
@@ -51,7 +42,7 @@
           </select>
         </div>
 
-        <button id="startMatchBtn" class="start-match-btn">Start Match</button>
+        <button id="startMatchBtn" class="primary-btn">Start Match</button>
       </div>
 
       <!-- MATCH SCREEN -->
