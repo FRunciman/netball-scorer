@@ -20,24 +20,46 @@ let lastQuarterB = 0;
 
 let wakeLock = null;
 
+/* ---------------- SCORE DISPLAY VARIABLES ---------------- */
+
+const teamAScoreDisplay = document.getElementById("teamAScore");
+const teamBScoreDisplay = document.getElementById("teamBScore");
+const timerDisplay = document.getElementById("timerDisplay");
+const stoppageDisplay = document.getElementById("stoppageDisplay");
+const centrePassIndicator = document.getElementById("centrePassIndicator");
+const quarterLabel = document.getElementById("quarterLabel");
+const quarterSummary = document.getElementById("quarterSummary");
+const pauseBtn = document.getElementById("pauseBtn");
+const resetBtn = document.getElementById("resetBtn");
+
 /* ---------------- START MATCH ---------------- */
 
 document.getElementById("startMatchBtn").onclick = startMatch;
 
 function startMatch() {
-  teamAName = teamAInput.value;
-  teamBName = teamBInput.value;
+  teamAName = document.getElementById("teamAInput").value.trim() || "Team A";
+  teamBName = document.getElementById("teamBInput").value.trim() || "Team B";
 
-  totalQuarters = parseInt(quarterCountInput.value);
-  quarterLengthMs = parseInt(quarterLengthInput.value) * 60 * 1000;
-  centrePassTeam = firstCentrePass.value;
+  totalQuarters =
+    parseInt(document.getElementById("quarterCountInput").value) || 4;
+  quarterLengthMs =
+    (parseInt(document.getElementById("quarterLengthInput").value) || 15) *
+    60 *
+    1000;
 
-  teamANameDisplay();
+  centrePassTeam = document.getElementById("firstCentrePass").value;
+
+  // Set display names properly
+  document.getElementById("teamAName").textContent = teamAName;
+  document.getElementById("teamBName").textContent = teamBName;
+
+  document.getElementById("quarterLabel").textContent = `Q${currentQuarter}`;
+
   resetTimer();
   enableWakeLock();
 
-  setupSection.classList.add("hidden");
-  matchSection.classList.remove("hidden");
+  document.getElementById("setupSection").classList.add("hidden");
+  document.getElementById("matchSection").classList.remove("hidden");
 }
 
 /* ---------------- TIMER ENGINE ---------------- */

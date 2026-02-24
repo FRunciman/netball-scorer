@@ -1,4 +1,4 @@
-const CACHE_NAME = "netball-scorer-v1.8";
+const CACHE_NAME = "netball-scorer-v1.9";
 
 const FILES_TO_CACHE = [
   "/",
