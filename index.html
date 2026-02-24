@@ -17,7 +17,7 @@
 
   <body>
     <div id="app">
-      <!-- Match Setup -->
+      <!-- SETUP -->
       <section id="setupSection" class="card">
         <h2>Match Setup</h2>
 
@@ -51,16 +51,23 @@
           </label>
         </div>
 
-        <button id="startMatchBtn" class="primary">Start Match</button>
+        <button id="nextBtn" class="primary">Next</button>
       </section>
 
-      <!-- Match Console -->
+      <!-- MATCH -->
       <section id="matchSection" class="hidden">
         <div class="scoreboard">
-          <div class="teamColumn" id="teamAColumn">
+          <div class="teamColumn">
             <h2 id="teamAName"></h2>
             <div class="score" id="teamAScore">0</div>
-            <button class="scoreBtn" data-team="A">+1</button>
+            <div class="scoreControls">
+              <button class="scoreBtn minus" data-team="A" data-action="minus">
+                −
+              </button>
+              <button class="scoreBtn plus" data-team="A" data-action="plus">
+                +
+              </button>
+            </div>
           </div>
 
           <div class="timerColumn">
@@ -70,14 +77,22 @@
             <div id="centrePassIndicator"></div>
           </div>
 
-          <div class="teamColumn" id="teamBColumn">
+          <div class="teamColumn">
             <h2 id="teamBName"></h2>
             <div class="score" id="teamBScore">0</div>
-            <button class="scoreBtn" data-team="B">+1</button>
+            <div class="scoreControls">
+              <button class="scoreBtn minus" data-team="B" data-action="minus">
+                −
+              </button>
+              <button class="scoreBtn plus" data-team="B" data-action="plus">
+                +
+              </button>
+            </div>
           </div>
         </div>
 
         <div class="controls">
+          <button id="startBtn" class="primary">Start Quarter</button>
           <button id="pauseBtn">Pause</button>
           <button id="resetBtn" class="danger">Reset Match</button>
         </div>

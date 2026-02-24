@@ -14,7 +14,7 @@ body {
   margin: 20px;
   padding: 20px;
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 .grid {
@@ -24,9 +24,17 @@ body {
 
 input,
 select {
-  padding: 8px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 10px;
   border: 1px solid #ddd;
+}
+
+button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 .primary {
@@ -37,13 +45,6 @@ select {
 .danger {
   background: #d32f2f;
   color: white;
-}
-
-button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
 }
 
 .scoreboard {
@@ -58,9 +59,31 @@ button {
 }
 
 .score {
-  font-size: 56px;
+  font-size: 64px;
   font-weight: bold;
-  margin: 10px 0;
+  margin: 12px 0;
+}
+
+.scoreControls {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.scoreBtn {
+  font-size: 30px;
+  padding: 18px 30px;
+  border-radius: 18px;
+}
+
+.plus {
+  background: #2e7d32;
+  color: white;
+}
+
+.minus {
+  background: #c62828;
+  color: white;
 }
 
 .timerColumn {
@@ -68,13 +91,13 @@ button {
 }
 
 #timerDisplay {
-  font-size: 42px;
+  font-size: 44px;
   font-weight: bold;
 }
 
 #stoppageDisplay {
-  font-size: 18px;
-  color: #888;
+  font-size: 20px;
+  color: #777;
 }
 
 #centrePassIndicator {
@@ -83,21 +106,36 @@ button {
   color: #1565c0;
 }
 
+.flash {
+  animation: pulse 0.4s ease;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .controls {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin: 20px;
-}
-
-#quarterSummary {
+  gap: 14px;
   margin: 20px;
 }
 
 .quarterCard {
   background: white;
-  padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 14px;
+  border-radius: 14px;
+  margin: 10px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
