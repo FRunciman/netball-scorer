@@ -2,117 +2,90 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <title>Netball Scorer</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#1565c0" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
     <link rel="stylesheet" href="style.css" />
   </head>
+
   <body>
-    <div class="app">
-      <!-- SETUP SCREEN -->
-      <div id="setupScreen" class="card setup-card">
-        <div class="setup-header">
-          <h1>Netball Scorer</h1>
-          <p>Create a new match</p>
+    <div id="app">
+      <!-- Match Setup -->
+      <section id="setupSection" class="card">
+        <h2>Match Setup</h2>
+
+        <div class="grid">
+          <label
+            >Team A
+            <input type="text" id="teamAInput" value="Team A" />
+          </label>
+
+          <label
+            >Team B
+            <input type="text" id="teamBInput" value="Team B" />
+          </label>
+
+          <label
+            >Quarter Length (mins)
+            <input type="number" id="quarterLengthInput" value="15" min="1" />
+          </label>
+
+          <label
+            >Number of Quarters
+            <input type="number" id="quarterCountInput" value="4" min="1" />
+          </label>
+
+          <label
+            >First Centre Pass
+            <select id="firstCentrePass">
+              <option value="A">Team A</option>
+              <option value="B">Team B</option>
+            </select>
+          </label>
         </div>
 
-        <div class="teams-row">
-          <div class="team-input-card">
-            <label>Team A</label>
-            <input id="teamAInput" type="text" value="Team A" />
+        <button id="startMatchBtn" class="primary">Start Match</button>
+      </section>
+
+      <!-- Match Console -->
+      <section id="matchSection" class="hidden">
+        <div class="scoreboard">
+          <div class="teamColumn" id="teamAColumn">
+            <h2 id="teamAName"></h2>
+            <div class="score" id="teamAScore">0</div>
+            <button class="scoreBtn" data-team="A">+1</button>
           </div>
 
-          <div class="team-input-card">
-            <label>Team B</label>
-            <input id="teamBInput" type="text" value="Team B" />
-          </div>
-        </div>
-
-        <div class="config-row">
-          <div class="config-card">
-            <label>Quarter Length</label>
-            <div class="inline-input">
-              <input id="quarterLengthInput" type="number" value="15" />
-              <span>mins</span>
-            </div>
+          <div class="timerColumn">
+            <div id="quarterLabel">Q1</div>
+            <div id="timerDisplay">15:00</div>
+            <div id="stoppageDisplay">+0:00</div>
+            <div id="centrePassIndicator"></div>
           </div>
 
-          <div class="config-card">
-            <label>Quarters</label>
-            <input id="quarterCountInput" type="number" value="4" />
-          </div>
-        </div>
-
-        <div class="centre-select-card">
-          <label>First Centre Pass</label>
-          <select id="firstCentreSelect">
-            <option value="A">Team A</option>
-            <option value="B">Team B</option>
-          </select>
-        </div>
-
-        <button id="startMatchBtn" class="start-match-btn">Start Match</button>
-      </div>
-
-      <!-- MATCH SCREEN ---->
-      <div id="matchScreen" class="hidden">
-        <div class="card timer-card">
-          <div id="quarterLabel">Quarter 1</div>
-          <div id="gameTimer" class="timer">15:00</div>
-          <div class="stoppage">+ <span id="stoppageTime">00:00</span></div>
-
-          <div class="timer-controls">
-            <button id="startStopBtn" class="primary-btn">Start</button>
-          </div>
-        </div>
-
-        <div class="card scoreboard-card">
-          <div class="scoreboard-grid">
-            <div id="teamACol" class="team-col">
-              <h2 id="teamALabel">Team A</h2>
-              <div id="scoreA" class="score">0</div>
-              <div class="score-buttons">
-                <button id="addA" class="score-btn plus">+</button>
-                <button id="subA" class="score-btn minus">−</button>
-              </div>
-            </div>
-
-            <div id="teamBCol" class="team-col">
-              <h2 id="teamBLabel">Team B</h2>
-              <div id="scoreB" class="score">0</div>
-              <div class="score-buttons">
-                <button id="addB" class="score-btn plus">+</button>
-                <button id="subB" class="score-btn minus">−</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="centre-area">
-            <div id="centreBadge" class="centre-badge">Centre: Team A</div>
-            <button id="overrideCentre" class="text-btn">
-              Override Centre
-            </button>
+          <div class="teamColumn" id="teamBColumn">
+            <h2 id="teamBName"></h2>
+            <div class="score" id="teamBScore">0</div>
+            <button class="scoreBtn" data-team="B">+1</button>
           </div>
         </div>
 
-        <div class="card">
-          <h3>Quarter Summary</h3>
-          <div id="quarterSummary"></div>
+        <div class="controls">
+          <button id="pauseBtn">Pause</button>
+          <button id="resetBtn" class="danger">Reset Match</button>
         </div>
 
-        <div class="actions">
-          <button id="shareBtn" class="secondary-btn">Share</button>
-          <button id="resetBtn" class="danger-btn">Reset Match</button>
-        </div>
-      </div>
+        <div id="quarterSummary"></div>
+      </section>
     </div>
 
     <script src="app.js"></script>
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/service-worker.js");
-        });
-      }
-    </script>
   </body>
 </html>
