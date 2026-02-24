@@ -13,7 +13,7 @@ function formatTime(seconds) {
 }
 
 /* ============================= */
-/* MATCH START */
+/* START MATCH */
 /* ============================= */
 function startMatch() {
   state = {
@@ -43,7 +43,7 @@ function startMatch() {
 }
 
 /* ============================= */
-/* UI UPDATE */
+/* UPDATE UI */
 /* ============================= */
 function updateUI() {
   teamALabel.textContent = state.config.teamA;
@@ -55,9 +55,14 @@ function updateUI() {
   gameTimer.textContent = formatTime(state.match.timeLeft);
   stoppageTime.textContent = formatTime(stoppageAccumulated);
 
-  quarterLabel.textContent = `Quarter ${state.match.quarter}`;
+  quarterLabel.textContent =
+    state.match.quarter <= state.config.quarterCount
+      ? `Quarter ${state.match.quarter}`
+      : "Full Time";
 
-  centreBadge.textContent = `Centre: ${state.match.centre === "A" ? state.config.teamA : state.config.teamB}`;
+  centreBadge.textContent = `Centre: ${
+    state.match.centre === "A" ? state.config.teamA : state.config.teamB
+  }`;
 
   teamACol.classList.toggle("active", state.match.centre === "A");
   teamBCol.classList.toggle("active", state.match.centre === "B");
@@ -66,14 +71,13 @@ function updateUI() {
 }
 
 /* ============================= */
-/* TIMER CONTROL */
+/* TIMER */
 /* ============================= */
 function toggleTimer() {
   if (state.match.running) {
     clearInterval(timerInterval);
     state.match.running = false;
 
-    // Start stoppage clock
     let start = Date.now();
     stoppageInterval = setInterval(() => {
       stoppageAccumulated = Math.floor((Date.now() - start) / 1000);
@@ -101,6 +105,8 @@ function toggleTimer() {
 /* SCORING */
 /* ============================= */
 function addScore(team) {
+  if (!state.match.running) return;
+
   if (team === "A") {
     state.match.totalA++;
     state.match.quarterA++;
@@ -109,7 +115,7 @@ function addScore(team) {
     state.match.quarterB++;
   }
 
-  // AUTO TOGGLE CENTRE PASS
+  // AUTO centre toggle
   state.match.centre = state.match.centre === "A" ? "B" : "A";
 
   updateUI();
@@ -131,15 +137,16 @@ subB.onclick = () => {
 };
 
 /* ============================= */
-/* QUARTER END */
+/* END QUARTER */
 /* ============================= */
 function endQuarter() {
   clearInterval(timerInterval);
   clearInterval(stoppageInterval);
-
   state.match.running = false;
 
-  // Determine winner of this quarter
+  const cumulativeA = state.match.totalA;
+  const cumulativeB = state.match.totalB;
+
   let winner = "Draw";
   if (state.match.quarterA > state.match.quarterB) {
     winner = state.config.teamA;
@@ -149,55 +156,80 @@ function endQuarter() {
 
   state.match.summaries.push({
     quarter: state.match.quarter,
-    scoreA: state.match.quarterA,
-    scoreB: state.match.quarterB,
-    winner: winner,
+    cumulativeA,
+    cumulativeB,
+    quarterA: state.match.quarterA,
+    quarterB: state.match.quarterB,
+    winner,
     stoppage: stoppageAccumulated,
   });
 
-  // Reset quarter-specific scores
+  // Reset quarter values
   state.match.quarterA = 0;
   state.match.quarterB = 0;
   stoppageAccumulated = 0;
 
-  nextQuarterBtn.disabled = false;
+  // Move to next quarter
+  state.match.quarter++;
+
+  if (state.match.quarter > state.config.quarterCount) {
+    showFinalResults();
+    return;
+  }
+
+  // Reset timer for next quarter
+  state.match.timeLeft = state.config.quarterLength;
   startStopBtn.textContent = "Start";
 
-  renderSummary();
   updateUI();
 }
 
 /* ============================= */
-/* NEXT QUARTER */
+/* FINAL RESULTS */
 /* ============================= */
-function nextQuarter() {
-  if (state.match.quarter >= state.config.quarterCount) return;
+function showFinalResults() {
+  document.querySelector(".timer-card").style.display = "none";
+  document.querySelector(".scoreboard-card").style.display = "none";
 
-  state.match.quarter++;
-  state.match.timeLeft = state.config.quarterLength;
-
-  nextQuarterBtn.disabled = true;
-
-  updateUI();
+  renderSummary(true);
 }
 
 /* ============================= */
-/* SUMMARY RENDER */
+/* RENDER SUMMARY */
 /* ============================= */
-function renderSummary() {
+function renderSummary(final = false) {
   quarterSummary.innerHTML = "";
 
   state.match.summaries.forEach((q) => {
     quarterSummary.innerHTML += `
-      Q${q.quarter}: 
-      ${state.config.teamA} ${q.scoreA} - ${q.scoreB} ${state.config.teamB}
+      <strong>
+        Q${q.quarter}: 
+        ${state.config.teamA} ${q.cumulativeA} - ${q.cumulativeB} ${state.config.teamB}
+      </strong>
       <br>
-      Winner: ${q.winner}
+      Quarter winner: ${q.winner} (${q.quarterA} - ${q.quarterB})
       <br>
       Stoppage: ${formatTime(q.stoppage)}
-      <hr>
+      <br><br>
     `;
   });
+
+  if (final) {
+    const finalWinner =
+      state.match.totalA > state.match.totalB
+        ? state.config.teamA
+        : state.match.totalB > state.match.totalA
+          ? state.config.teamB
+          : "Draw";
+
+    quarterSummary.innerHTML =
+      `<h2>Full Time</h2>
+       <h3>
+       ${state.config.teamA} ${state.match.totalA} - ${state.match.totalB} ${state.config.teamB}
+       </h3>
+       <p><strong>Match Winner: ${finalWinner}</strong></p>
+       <hr><br>` + quarterSummary.innerHTML;
+  }
 }
 
 /* ============================= */
@@ -222,7 +254,6 @@ function shareMatch() {
 /* ============================= */
 startMatchBtn.onclick = startMatch;
 startStopBtn.onclick = toggleTimer;
-nextQuarterBtn.onclick = nextQuarter;
 resetBtn.onclick = resetMatch;
 shareBtn.onclick = shareMatch;
 
