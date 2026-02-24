@@ -249,7 +249,7 @@ function shareMatch() {
   navigator.share?.({ text });
 }
 
-/* ============================= */
+/* ========================================================== */
 /* EVENTS */
 /* ============================= */
 startMatchBtn.onclick = startMatch;

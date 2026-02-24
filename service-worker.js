@@ -1,4 +1,4 @@
-const CACHE_NAME = "netball-scorer-v1.5";
+const CACHE_NAME = "netball-scorer-v1.7";
 
 const ASSETS_TO_CACHE = ["/", "/index.html", "/style.css", "/app.js"];
 
