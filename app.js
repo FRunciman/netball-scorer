@@ -115,11 +115,21 @@ pauseBtn.onclick = () => {
   if (!matchStarted) return;
 
   if (!isPaused) {
+    // ---- PAUSE ----
     isPaused = true;
     stoppageStart = Date.now();
     pauseBtn.textContent = "Resume";
   } else {
-    quarterStoppageTotal += Date.now() - stoppageStart;
+    // ---- RESUME ----
+    const stoppageDuration = Date.now() - stoppageStart;
+
+    // Accumulate total stoppage
+    quarterStoppageTotal += stoppageDuration;
+
+    // 🔥 CRITICAL FIX:
+    // Extend the quarter end time by stoppage amount
+    quarterEndTime += stoppageDuration;
+
     stoppageStart = null;
     isPaused = false;
     pauseBtn.textContent = "Pause";
